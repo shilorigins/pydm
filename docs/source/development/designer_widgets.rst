@@ -54,15 +54,14 @@ widget in your own Python package:
 
 .. code:: python
 
-    from setuptools import setup, find_packages
+    from setuptools import setup
 
     setup(
-        name="my_package",
+        name="{my_package}",
         # ... other settings will go here
         entry_points={
-            "gui_scripts": ["my_package_gui=my_package.main:main"],
             "pydm.widget": [
-                "MyWidgetDesigner=my_package.tool_name:MyWidgetClass",
+                "{MyWidgetClass}Designer={my_package}:{MyWidgetClass}",
             ],
         },
         install_requires=[],
@@ -71,23 +70,27 @@ widget in your own Python package:
 
 This would assume that you have the following:
 
-1. A package named "my_package" with ``my_package/__init__.py`` and
-   ``my_package/widget.py``.
-2. In ``my_package/widget.py``, a ``MyWidgetClass`` that inherits from
+1. A package named "{my_package}" with ``{my_package}/{my_package}/__init__.py`` and
+   ``{my_package}/{my_package}/{MyWidgetClass}.py``.
+2. In ``{MyWidgetClass}.py``, a ``{MyWidgetClass}`` that inherits from
    :class:`~QtWidgets.QWidget`.
 
-After running ``pip install`` on the package, it should be readily available
-in the Qt Designer.
+This structure supports adding multiple widget files in the same package.  After
+running ``pip install`` on ``{my_package}/``, it should be readily available in the Qt
+Designer.  For development purposes, ``pip install --user -e {my_package}/`` limits
+the install to only the current user and automatically pulls in changes to the source
+code.
 
 The class may specify additional settings by way of this mechanism:
 
 .. code:: python
+    from pydm.widgets.qtplugin_base import WidgetCategory
 
-    class MyWidgetClass(QtWidgets.QWidget):
+    class {MyWidgetClass}(QtWidgets.QWidget):
         """This is your custom widget."""
         # Add this to customize where/how the widget shows up in the designer:
         _qt_designer_ = {
-            "group": "My Widget Category",
+            "group": "WidgetCategory.{category}",
             "is_container": False,
             "extensions": [],
             "icon": None,  # QtGui.QIcon(...)
@@ -95,3 +98,5 @@ The class may specify additional settings by way of this mechanism:
 
 
 The ``_qt_designer_`` dictionary is passed directly to ``qtplugin_factory``.
+
+For more information on python package structure see `this page https://python-packaging.readthedocs.io/en/latest/minimal.html#adding-additional-files`_, and for entry points see `this section of the setuptools docs http://peak.telecommunity.com/DevCenter/setuptools#dynamic-discovery-of-services-and-plugins`_.
