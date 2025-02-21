@@ -615,6 +615,7 @@ class BasePlotAxisItem(AxisItem):
         auto_range: bool
         """
         self._auto_range = auto_range
+        self.linkedView().enableAutoRange(ViewBox.YAxis, self._auto_range)
 
     @property
     def log_mode(self) -> bool:
